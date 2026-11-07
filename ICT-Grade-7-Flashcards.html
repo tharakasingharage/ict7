@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ICT Grade 7 · Study Flashcards</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#eef2f7; --card:#ffffff; --ink:#0f172a; --muted:#64748b; --line:#e2e8f0;
+    --emerald:#10b981; --emerald-dark:#059669; --amber:#f59e0b; --red:#ef4444;
+  }
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.55; min-height:100vh;
+  }
+  button{font-family:inherit}
+  .hidden{display:none !important}
+  .ic{width:18px;height:18px;flex:0 0 auto}
+  .ic-sm{width:15px;height:15px}
+
+  /* ---------- top bar ---------- */
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .topbar-inner{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 18px}
+  .icon-btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    width:38px;height:38px;border-radius:12px;border:1.5px solid var(--line);
+    background:#fff;color:#475569;cursor:pointer;transition:.15s;font-size:.82rem;font-weight:600;
+  }
+  .icon-btn:hover{border-color:#94a3b8;color:var(--ink)}
+  .icon-btn.active{background:var(--ink);border-color:var(--ink);color:#fff}
+  .topbar-title{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+  .logo-dot{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#10b981,#0d9488);display:flex;align-items:center;justify-content:center;color:#fff;flex:0 0 auto}
+  .tt-main{font-weight:800;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tt-sub{font-size:.72rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  main{max-width:1080px;margin:0 auto;padding:22px 18px 60px}
+  .view{animation:fadeIn .25s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* ---------- buttons ---------- */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;
+    font-weight:700;border-radius:999px;padding:11px 20px;font-size:.9rem;transition:.18s;line-height:1;
+  }
+  .btn:active{transform:scale(.97)}
+  .btn-solid{background:var(--emerald);color:#fff;box-shadow:0 4px 14px rgba(16,185,129,.35)}
+  .btn-solid:hover{background:var(--emerald-dark)}
+  .btn-glass{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .btn-glass:hover{background:rgba(255,255,255,.22)}
+  .btn-outline{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+  .btn-outline:hover{border-color:#94a3b8}
+  .btn-amber{background:#fffbeb;color:#b45309;border:1.5px solid #fde68a}
+  .btn-amber:hover{background:#fef3c7}
+  .btn-ink{background:var(--ink);color:#fff}
+  .btn-ink:hover{background:#1e293b}
+  .btn-lg{padding:14px 24px;font-size:.95rem}
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:linear-gradient(135deg,#0f172a,#1e293b 55%,#064e3b);color:#fff;
+    border-radius:26px;padding:32px 30px;box-shadow:0 16px 40px rgba(6,78,59,.28);
+    position:relative;overflow:hidden;
+  }
+  .hero::after{content:"";position:absolute;right:-70px;top:-70px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,.35),transparent 70%);pointer-events:none}
+  .hero-kicker{display:flex;align-items:center;gap:8px;color:#6ee7b7;font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+  .hero h1{margin-top:12px;font-size:2rem;font-weight:800;letter-spacing:-.02em}
+  .hero p{margin-top:10px;max-width:620px;color:#cbd5e1;font-size:.92rem}
+  .hero p b{color:#fff}
+  .hero-actions{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px}
+
+  /* ---------- progress card ---------- */
+  .progress-card{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:20px 22px;box-shadow:0 4px 14px rgba(2,6,23,.05)}
+  .pc-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+  .pc-head h3{font-size:1.02rem;font-weight:800}
+  .pc-best{font-size:.78rem;color:var(--muted);font-weight:600}
+  .pc-best b{color:var(--emerald-dark)}
+  .bar{height:9px;border-radius:999px;background:#eef2f7;overflow:hidden;margin-top:12px}
+  .bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#10b981,#14b8a6);transition:width .4s ease}
+  .bar.big{height:12px}
+  .pc-stats{margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+  .stat-box{background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+  .stat-box .n{font-size:1.3rem;font-weight:800;line-height:1.1}
+  .stat-box .l{font-size:.7rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+  .n-green{color:var(--emerald-dark)} .n-amber{color:#b45309} .n-slate{color:#475569}
+  .pc-foot{margin-top:12px;display:flex;justify-content:flex-end}
+  .link-btn{background:none;border:none;color:#94a3b8;font-size:.78rem;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .link-btn:hover{color:var(--red)}
+
+  /* ---------- section head ---------- */
+  .sec-head{margin:26px 2px 12px;display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .sec-head h2{font-size:1.15rem;font-weight:800}
+  .sec-head span{font-size:.78rem;color:var(--muted);font-weight:600}
+
+  /* ---------- chapter grid ---------- */
+  .chapter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  .chapter-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 4px 14px rgba(2,6,23,.05);position:relative;overflow:hidden;transition:.2s}
+  .chapter-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(2,6,23,.09)}
+  .chapter-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--ac),var(--ac-soft))}
+  .ch-head{display:flex;gap:12px;align-items:flex-start}
+  .ch-icon{width:46px;height:46px;border-radius:13px;background:var(--ac-soft);color:var(--ac);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .ch-icon .ic{width:22px;height:22px}
+  .ch-num{font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}
+  .ch-title{font-size:.98rem;font-weight:800;line-height:1.3;margin-top:2px}
+  .ch-count{display:block;font-size:.75rem;color:var(--muted);font-weight:600;margin-top:3px}
+  .ch-bar{height:7px;border-radius:999px;background:#eef2f7;overflow:hidden;margin:14px 0}
+  .ch-bar-fill{height:100%;background:var(--ac);border-radius:999px;transition:width .4s}
+  .ch-actions{display:flex;gap:8px}
+  .ch-actions .btn{flex:1;padding:10px 12px;font-size:.84rem}
+  .btn-ch{background:var(--ac);color:#fff}
+  .btn-ch:hover{filter:brightness(1.08)}
+
+  /* ---------- study view ---------- */
+  .panel-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .panel-title{font-size:1.02rem;font-weight:800;flex:1;min-width:140px}
+  .progress-chip{font-size:.78rem;font-weight:700;color:#475569;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 13px}
+  .flip-wrap{perspective:1500px;max-width:760px;margin:0 auto}
+  .flip-card{position:relative;height:420px;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,.2,.2,1);cursor:pointer}
+  .flip-card.flipped{transform:rotateY(180deg)}
+  .face{
+    position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    border-radius:22px;border:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;
+    background:#fff;box-shadow:0 12px 32px rgba(2,6,23,.09);
+  }
+  .face::before{content:"";height:5px;background:linear-gradient(90deg,var(--ac),var(--ac-soft));flex:0 0 auto}
+  .face.back{transform:rotateY(180deg)}
+  .face-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;border-bottom:1px dashed var(--line);flex:0 0 auto}
+  .face-tag{display:inline-flex;align-items:center;gap:7px;font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}
+  .face-tag .dot{width:9px;height:9px;border-radius:50%;background:var(--ac)}
+  .badge{font-size:.7rem;font-weight:700;color:#475569;background:#f1f5f9;border-radius:999px;padding:4px 10px;white-space:nowrap}
+  .face-body{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;justify-content:center}
+  .q-text{font-size:1.22rem;font-weight:700;line-height:1.45}
+  .a-text{font-size:1rem;line-height:1.7;color:#1e293b;white-space:pre-wrap}
+  .face-foot{flex:0 0 auto;padding:10px 18px;border-top:1px dashed var(--line);font-size:.72rem;color:#94a3b8;text-align:center;font-weight:600}
+  .grade-row{max-width:760px;margin:16px auto 0;display:flex;gap:10px;align-items:center}
+  .grade-row .btn{flex:1;padding:13px 12px}
+  .arrow-btn{flex:0 0 44px !important;width:44px;height:46px;border-radius:14px !important;padding:0 !important}
+
+  /* ---------- done screens ---------- */
+  .done-wrap{max-width:560px;margin:40px auto;background:#fff;border:1px solid var(--line);border-radius:24px;padding:34px 28px;text-align:center;box-shadow:0 12px 32px rgba(2,6,23,.08)}
+  .done-emoji{font-size:2.6rem;line-height:1}
+  .done-wrap h2{margin-top:12px;font-size:1.35rem;font-weight:800}
+  .done-wrap .sub{margin-top:6px;color:var(--muted);font-size:.9rem}
+  .done-stats{margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .done-actions{margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .score-circle{
+    width:130px;height:130px;margin:6px auto 0;border-radius:50%;
+    background:linear-gradient(135deg,#10b981,#0d9488);color:#fff;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    box-shadow:0 14px 34px rgba(13,148,136,.4);
+  }
+  .score-circle .big{font-size:2.1rem;font-weight:800;line-height:1}
+  .score-circle .of{font-size:.75rem;opacity:.85;font-weight:600;margin-top:4px}
+  .missed-box{margin-top:18px;text-align:left;background:#f8fafc;border:1px solid var(--line);border-radius:16px;padding:14px 16px;max-height:230px;overflow-y:auto}
+  .missed-box h4{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px}
+  .missed-item{padding:9px 0;border-top:1px dashed var(--line)}
+  .missed-item:first-of-type{border-top:none}
+  .missed-item .mq{font-weight:700;font-size:.86rem}
+  .missed-item .ma{font-size:.82rem;color:#334155;margin-top:3px}
+
+  /* ---------- quiz ---------- */
+  .quiz-box{max-width:760px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 10px 28px rgba(2,6,23,.07)}
+  .quiz-kicker{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .quiz-q{margin-top:14px;font-size:1.15rem;font-weight:700;line-height:1.5}
+  .quiz-options{margin-top:18px;display:grid;gap:10px}
+  .quiz-opt{
+    display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;background:#fff;
+    border:1.5px solid var(--line);border-radius:14px;padding:13px 15px;cursor:pointer;
+    font-size:.93rem;line-height:1.5;transition:.15s;color:var(--ink);
+  }
+  .quiz-opt:hover:not(:disabled){border-color:#94a3b8}
+  .quiz-opt:disabled{cursor:default}
+  .quiz-opt.correct{border-color:var(--emerald);background:#ecfdf5}
+  .quiz-opt.wrong{border-color:var(--red);background:#fef2f2}
+  .opt-letter{flex:0 0 26px;height:26px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.78rem;color:#475569}
+  .quiz-opt.correct .opt-letter{background:var(--emerald);color:#fff}
+  .quiz-opt.wrong .opt-letter{background:var(--red);color:#fff}
+  .quiz-feedback{min-height:24px;margin-top:14px;font-weight:700;font-size:.9rem;text-align:center}
+  .quiz-feedback.ok{color:var(--emerald-dark)}
+  .quiz-feedback.bad{color:var(--red)}
+
+  /* ---------- browse ---------- */
+  .browse-tools{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;box-shadow:0 4px 14px rgba(2,6,23,.05)}
+  .search-row{display:flex;align-items:center;gap:10px;background:#f8fafc;border:1.5px solid var(--line);border-radius:12px;padding:10px 14px}
+  .search-row svg{color:#94a3b8}
+  .search-row input{border:none;outline:none;background:transparent;flex:1;font-size:.92rem;font-family:inherit;color:var(--ink)}
+  .chip-rows{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+  .chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;font-size:.8rem;font-weight:700;color:#475569;cursor:pointer;transition:.15s}
+  .chip:hover{border-color:#94a3b8}
+  .chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .browse-count{margin:14px 2px 10px;font-size:.8rem;color:var(--muted);font-weight:600}
+  .b-item{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:0 2px 8px rgba(2,6,23,.04)}
+  .b-item + .b-item{margin-top:10px}
+  .b-q{font-weight:700;font-size:.95rem;line-height:1.45}
+  .b-a{margin-top:7px;font-size:.88rem;color:#334155;line-height:1.65;white-space:pre-wrap}
+  .b-foot{margin-top:11px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .st{border-radius:999px;padding:4px 11px;font-size:.7rem;font-weight:800;letter-spacing:.03em;border:none;cursor:pointer;transition:.15s}
+  .st-unseen{background:#f1f5f9;color:#64748b}
+  .st-learning{background:#fef3c7;color:#b45309}
+  .st-mastered{background:#d1fae5;color:#047857}
+  .st:hover{filter:brightness(.95)}
+  .b-foot .hint{font-size:.68rem;color:#cbd5e1}
+
+  /* ---------- footer ---------- */
+  footer{max-width:1080px;margin:0 auto;padding:0 18px 34px;text-align:center;color:#94a3b8;font-size:.76rem}
+
+  @media (max-width:640px){
+    .hero{padding:26px 22px}
+    .hero h1{font-size:1.55rem}
+    .flip-card{height:460px}
+    .q-text{font-size:1.08rem}
+    .grade-row .btn{font-size:.82rem;padding:12px 8px}
+    .done-stats{grid-template-columns:1fr 1fr}
+    .tt-main{font-size:.85rem}
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <button id="btn-home" class="icon-btn" title="Home">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+    </button>
+    <div class="topbar-title">
+      <span class="logo-dot">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2a5.5 5.5 0 0 0-5.4 6.6A5 5 0 0 0 6 18h1.5"/><path d="M14.5 2a5.5 5.5 0 0 1 5.4 6.6A5 5 0 0 1 18 18h-1.5"/><path d="M8.5 14.5 12 11l3.5 3.5"/><path d="M12 11v11"/></svg>
+      </span>
+      <div style="min-width:0">
+        <div class="tt-main">ICT Grade 7 — Study Flashcards</div>
+        <div class="tt-sub" id="topbar-sub">Exam prep</div>
+      </div>
+    </div>
+    <button id="btn-reset" class="icon-btn" title="Reset all progress">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+  <!-- ============ HOME ============ -->
+  <section id="view-home" class="view">
+    <div class="hero">
+      <div class="hero-kicker">
+        <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>ICT · Grade 7 · Exam Prep</span>
+      </div>
+      <h1>Study Flashcards</h1>
+      <p>Every important fact from the <b>Information &amp; Communication Technology — Grade 7</b> reading book, organised into <b id="hero-total">…</b> flashcards across <b>7 chapters</b>. Flip, quiz and track your mastery — everything is saved in your browser.</p>
+      <div class="hero-actions">
+        <button class="btn btn-solid btn-lg" id="btn-study-all">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2a5.5 5.5 0 0 0-5.4 6.6A5 5 0 0 0 6 18h1.5"/><path d="M14.5 2a5.5 5.5 0 0 1 5.4 6.6A5 5 0 0 1 18 18h-1.5"/><path d="M8.5 14.5 12 11l3.5 3.5"/><path d="M12 11v11"/></svg>
+          Study all cards
+        </button>
+        <button class="btn btn-glass btn-lg" id="btn-quiz-all">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+          Mixed quiz (10 Qs)
+        </button>
+        <button class="btn btn-glass btn-lg" id="btn-browse-all">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>
+          Browse all
+        </button>
+      </div>
+    </div>
+
+    <div class="progress-card">
+      <div class="pc-head">
+        <h3>Your mastery</h3>
+        <span class="pc-best" id="pc-best">Best mixed quiz: —</span>
+      </div>
+      <div class="bar big"><div class="bar-fill" id="pc-bar" style="width:0%"></div></div>
+      <div class="pc-stats">
+        <div class="stat-box"><div class="n n-green" id="stat-mastered">0</div><div class="l">Mastered</div></div>
+        <div class="stat-box"><div class="n n-amber" id="stat-learning">0</div><div class="l">Still learning</div></div>
+        <div class="stat-box"><div class="n n-slate" id="stat-unseen">0</div><div class="l">Not seen</div></div>
+        <div class="stat-box"><div class="n" id="stat-total">0</div><div class="l">Total cards</div></div>
+      </div>
+      <div class="pc-foot"><button class="link-btn" id="btn-reset2">Reset progress</button></div>
+    </div>
+
+    <div class="sec-head">
+      <h2>Chapters</h2>
+      <span>Pick a chapter to study or take a quiz on it</span>
+    </div>
+    <div class="chapter-grid" id="chapter-grid"></div>
+  </section>
+
+  <!-- ============ STUDY ============ -->
+  <section id="view-study" class="view hidden">
+    <div class="panel-head">
+      <button class="icon-btn" id="btn-study-back" title="Back to home">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      </button>
+      <div class="panel-title" id="study-label">All chapters</div>
+      <button class="icon-btn" id="btn-shuffle" title="Shuffle cards">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/></svg>
+      </button>
+      <span class="progress-chip" id="study-progress-text">1 / 10</span>
+    </div>
+    <div class="bar" style="margin-bottom:18px"><div class="bar-fill" id="study-bar" style="width:0%"></div></div>
+
+    <div id="study-card-area">
+      <div class="flip-wrap">
+        <div class="flip-card" id="flip-card">
+          <div class="face front">
+            <div class="face-head">
+              <span class="face-tag"><span class="dot"></span>Question</span>
+              <span class="badge" id="card-ch-badge-f">Ch 1</span>
+            </div>
+            <div class="face-body"><div class="q-text" id="card-q-text">…</div></div>
+            <div class="face-foot">Tap the card or press SPACE to flip</div>
+          </div>
+          <div class="face back">
+            <div class="face-head">
+              <span class="face-tag"><span class="dot"></span>Answer</span>
+              <span class="badge" id="card-ch-badge-b">Ch 1</span>
+            </div>
+            <div class="face-body"><div class="a-text" id="card-a-text">…</div></div>
+            <div class="face-foot">Press 2 if you knew it · 1 if you didn't</div>
+          </div>
+        </div>
+      </div>
+      <div class="grade-row">
+        <button class="btn btn-outline arrow-btn" id="btn-prev" title="Previous card">←</button>
+        <button class="btn btn-amber" id="btn-learning">Still learning</button>
+        <button class="btn btn-solid" id="btn-mastered">✓ Mastered</button>
+        <button class="btn btn-outline arrow-btn" id="btn-next" title="Next card">→</button>
+      </div>
+    </div>
+
+    <div id="study-done" class="hidden">
+      <div class="done-wrap">
+        <div class="done-emoji">🎉</div>
+        <h2>Session complete!</h2>
+        <p class="sub" id="done-sub">Nice work.</p>
+        <div class="done-stats">
+          <div class="stat-box"><div class="n n-green" id="done-mastered">0</div><div class="l">Mastered now</div></div>
+          <div class="stat-box"><div class="n n-amber" id="done-learning">0</div><div class="l">Marked learning</div></div>
+          <div class="stat-box"><div class="n" id="done-pct">0%</div><div class="l">Overall mastery</div></div>
+        </div>
+        <div class="done-actions">
+          <button class="btn btn-solid" id="btn-study-again">Study again (shuffled)</button>
+          <button class="btn btn-outline" id="btn-study-home">Back to chapters</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="view-quiz" class="view hidden">
+    <div class="panel-head">
+      <button class="icon-btn" id="btn-quiz-back" title="Back to home">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      </button>
+      <div class="panel-title" id="quiz-label">Mixed quiz</div>
+      <span class="progress-chip" id="quiz-best-chip">Best: —</span>
+      <span class="progress-chip" id="quiz-progress-text">Question 1 of 10</span>
+    </div>
+    <div class="bar" style="margin-bottom:18px"><div class="bar-fill" id="quiz-bar" style="width:0%"></div></div>
+
+    <div id="quiz-card-area">
+      <div class="quiz-box">
+        <div class="quiz-kicker">
+          <span class="badge" id="quiz-ch">Ch 1</span>
+        </div>
+        <div class="quiz-q" id="quiz-q">…</div>
+        <div class="quiz-options" id="quiz-options"></div>
+        <div class="quiz-feedback" id="quiz-feedback"></div>
+      </div>
+    </div>
+
+    <div id="quiz-done" class="hidden">
+      <div class="done-wrap">
+        <div class="score-circle"><div class="big" id="quiz-score">0</div><div class="of" id="quiz-of">out of 10</div></div>
+        <h2 id="quiz-msg">Good try!</h2>
+        <p class="sub" id="quiz-best-line">Best score: —</p>
+        <div class="missed-box hidden" id="quiz-missed-box">
+          <h4>Review what you missed</h4>
+          <div id="quiz-missed"></div>
+        </div>
+        <div class="done-actions">
+          <button class="btn btn-solid" id="btn-quiz-again">Try again</button>
+          <button class="btn btn-outline" id="btn-quiz-home">Back to chapters</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BROWSE ============ -->
+  <section id="view-browse" class="view hidden">
+    <div class="panel-head">
+      <button class="icon-btn" id="btn-browse-back" title="Back to home">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      </button>
+      <div class="panel-title">Browse all cards</div>
+    </div>
+    <div class="browse-tools">
+      <div class="search-row">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="browse-search" type="text" placeholder="Search questions and answers…" autocomplete="off">
+      </div>
+      <div class="chip-rows" id="browse-chips"></div>
+      <div class="chip-rows" id="browse-status-chips"></div>
+    </div>
+    <div class="browse-count" id="browse-count">…</div>
+    <div id="browse-list"></div>
+  </section>
+</main>
+
+<footer>
+  Based on the <b>ICT Grade 7</b> reading book · Works fully offline · Progress is saved automatically in this browser
+</footer>
+
+<noscript><p style="text-align:center;padding:20px">Please enable JavaScript to use this app.</p></noscript>
+
+<script>window.CARDS=[{"id":"c1-01","chapter":1,"question":"What is the Central Processing Unit (CPU)?","answer":"A digital circuit that processes data according to given instructions. It is considered the BRAIN of the computer. Its main function is to execute instructions stored in a computer programme."},{"id":"c1-02","chapter":1,"question":"Where is the CPU located?","answer":"Fixed on the motherboard, inside the system unit. It cannot be observed from the outside."},{"id":"c1-03","chapter":1,"question":"Name the three main components of the CPU.","answer":"1) Arithmetic & Logical Unit (ALU)  •  2) Control Unit (CU)  •  3) Memory Registers"},{"id":"c1-04","chapter":1,"question":"What are the two sub-functions of the Arithmetic & Logical Unit (ALU)?","answer":"1) Mathematical functions — addition, subtraction, multiplication, division (e.g. 2 + 3 = 5)  •  2) Logical functions — comparison of two numbers (e.g. 3 > 2)"},{"id":"c1-05","chapter":1,"question":"What does the Control Unit (CU) do?","answer":"Communicates with and controls all the hardware connected to the computer. Controls input and output data, ensures data is sent to the right place at the right time, and checks that relevant signals are successfully received."},{"id":"c1-06","chapter":1,"question":"What is the function of the Memory Registers?","answer":"They temporarily store data and instructions being used by the CPU. Their storage capacity is very low compared to devices like the hard disk, but their data access speed is very high."},{"id":"c1-07","chapter":1,"question":"Name the four generations of the CPU and the electronic technology used in each.","answer":"1st Generation — Vacuum tubes  •  2nd Generation — Transistors  •  3rd Generation — Integrated circuits  •  4th Generation — Microprocessors"},{"id":"c1-08","chapter":1,"question":"What are the time periods of the four CPU generations?","answer":"1st: 1940–1956  •  2nd: 1956–1963  •  3rd: 1964–1971  •  4th: 1971 to date"},{"id":"c1-09","chapter":1,"question":"Give two key facts about First Generation computers.","answer":"Used about 18,000 vacuum tubes that emitted a lot of heat; as large as a room; heavy power consumption; execution speed measured in milliseconds; very costly. Examples: ENIAC, UNIVAC, EDVAC."},{"id":"c1-10","chapter":1,"question":"Give two key facts about Second Generation computers.","answer":"Used transistors; smaller than 1st generation; less power consumption; speed measured in microseconds; still costly. Examples: IBM 7030, CDC 1604."},{"id":"c1-11","chapter":1,"question":"Give two key facts about Third Generation computers.","answer":"Used integrated circuits; smaller than 2nd generation; less power consumption; speed measured in nanoseconds; cheaper than 2nd generation. Examples: IBM 360, CDC 6600."},{"id":"c1-12","chapter":1,"question":"Give two key facts about Fourth Generation computers.","answer":"Use microprocessors; smallest size; least power consumption; speed measured in MIPS (Millions of Instructions Per Second) and picoseconds. Examples: modern computers in use today."},{"id":"c1-13","chapter":1,"question":"1 millisecond = ? seconds  |  1 microsecond = ? seconds","answer":"1 millisecond = 0.001 s  •  1 microsecond = 0.000001 s  •  1 nanosecond = 0.000000001 s  •  1 picosecond = 0.000000000001 s"},{"id":"c1-14","chapter":1,"question":"What is the speed of the CPU (clock speed) and its unit?","answer":"The number of instructions executed in a second. The unit is hertz (Hz). Modern computers use megahertz (MHz) or gigahertz (GHz)."},{"id":"c1-15","chapter":1,"question":"1 KHz = ?  |  1 MHz = ?  |  1 GHz = ?","answer":"1 KHz = 1,000 Hz  •  1 MHz = 1,000,000 Hz  •  1 GHz = 1,000,000,000 Hz"},{"id":"c1-16","chapter":1,"question":"A dual-core processor is compared to what in the hotel-kitchen analogy?","answer":"A kitchen with two chefs preparing two meals — so two things can be prepared (processed) at the same time. The CPU is like the chef of the computer's kitchen."},{"id":"c2-01","chapter":2,"question":"What is an Operating System?","answer":"The main software in a computer that enables communication between man and the computer, and controls the computer hardware and other software."},{"id":"c2-02","chapter":2,"question":"List the tasks performed by the operating system.","answer":"Provides a user interface • Controls activities related to storage devices • Processes files and folders correctly • Manages computer memory efficiently • Controls the functions of the CPU • Protects the computer through usernames and passwords • Manages the hardware"},{"id":"c2-03","chapter":2,"question":"Give examples of operating systems used in computers.","answer":"Microsoft DOS (MS DOS) • Microsoft Windows • Apple Macintosh (Mac OS) • Linux-based systems: Ubuntu, Fedora"},{"id":"c2-04","chapter":2,"question":"Give examples of operating systems used in mobile phones.","answer":"Android (smart phones) • iOS / iPhone OS (Apple iPhone, iPad, iPod) • Blackberry OS • Windows Mobile OS (Lumia, HTC)"},{"id":"c2-05","chapter":2,"question":"What are computer storage devices?","answer":"Devices used to store the data, information and programmes that belong to a computer (e.g. documents, photos, videos, animations, voice & sounds, software)."},{"id":"c2-06","chapter":2,"question":"Name the three categories of storage devices according to manufacturing technology, with an example each.","answer":"1) Magnetic media devices — e.g. Hard Disk  •  2) Optical media devices — e.g. Compact Disk (CD)  •  3) Solid state media devices — e.g. Pen Drive"},{"id":"c2-07","chapter":2,"question":"What are magnetic media devices?","answer":"Devices that consist of a magnetic surface or magnetic tape. Examples: magnetic tapes, floppy disks and hard disks."},{"id":"c2-08","chapter":2,"question":"Describe the hard disk and its two types.","answer":"Consists of a magnetised platter and a moving metal head. Internal hard disk — inside the system unit, stores a large amount of data permanently. External hard disk — portable, comes in capacities such as 500 GB, 1 TB, 2 TB."},{"id":"c2-09","chapter":2,"question":"What is a magnetic tape?","answer":"A thin plastic tape covered with a magnetic substance, used for recording sounds, images or computer data. It was often used in the past but is now obsolete."},{"id":"c2-10","chapter":2,"question":"What is the capacity of a floppy disk? What about zip and jazz disks?","answer":"Floppy disk: 1.44 MB (used to carry small files, now becoming obsolete). Zip disk: 250 MB. Jazz disk: 2 GB."},{"id":"c2-11","chapter":2,"question":"How do optical media devices read and write data?","answer":"Data is read and written by LASER BEAMS. Optical disks (CD, DVD, Blu-ray) are all portable."},{"id":"c2-12","chapter":2,"question":"What are the two types of CDs and their capacities?","answer":"CD-R (Recordable — write once) and CD-RW (Rewritable). Capacities: 650 MB and 700 MB."},{"id":"c2-13","chapter":2,"question":"What are the two types of DVDs and their capacities?","answer":"DVD-R (data can be written once) and DVD-RW (rewritable). Capacities: 4.7 GB, 8.5 GB, 15 GB and 30 GB."},{"id":"c2-14","chapter":2,"question":"What is special about Blu-ray disks?","answer":"Data can be stored on several levels — 25 GB on EACH level."},{"id":"c2-15","chapter":2,"question":"What are solid state media devices? Give examples.","answer":"Devices that write and read data electronically at high speed. They have NO moving parts (unlike hard disks and CDs). Examples: Pen Drive, Solid State Drive (SSD), Memory Card."},{"id":"c2-16","chapter":2,"question":"What is a file? What are its two parts?","answer":"A file is anything saved in the computer — a letter, a song, a photo, etc. Two parts: File NAME (used to identify the file) and File EXTENSION (indicates the application software of the file, e.g. sportmeet.docx)."},{"id":"c2-17","chapter":2,"question":"What is a folder?","answer":"The place where files are stored. Folders hold related files, keep them in order, and help retrieve them easily and fast. Folders can have sub-folders inside a main folder."},{"id":"c2-18","chapter":2,"question":"Which commands are used to save a file? What happens the first time you save?","answer":"Save or Save As commands. When saving a file for the FIRST time, the Save As window opens no matter which option you choose."},{"id":"c2-19","chapter":2,"question":"How do you COPY a folder? How do you MOVE it?","answer":"Copy: select the folder → Copy command (toolbar or right-click) → go to destination → Paste.  •  Move: select the folder → Cut command → go to destination → Paste."},{"id":"c2-20","chapter":2,"question":"How do you rename a folder?","answer":"Take the mouse pointer onto the folder, click the RIGHT button of the mouse, select Rename, then type the required name."},{"id":"c2-21","chapter":2,"question":"What is the difference between deleting a folder from an internal location vs. an external device?","answer":"Internal (e.g. hard disk): deleted TEMPORARILY — it can be retrieved when needed.  •  External (e.g. pen drive): deleted PERMANENTLY — it cannot be retrieved again."},{"id":"c2-22","chapter":2,"question":"How do you delete a file or folder permanently?","answer":"Press SHIFT + DELETE keys together, then select Yes in the dialog box."},{"id":"c2-23","chapter":2,"question":"What characteristics of a file/folder can you see in Properties?","answer":"Type of file and the program that opens it • Location • Size and size on disk • Date and time created, modified and accessed (open via right-click → Properties)."},{"id":"c3-01","chapter":3,"question":"The security of a computer system is divided into which two parts?","answer":"1) Hardware security  •  2) Software security — both hardware and software components should be given equal attention."},{"id":"c3-02","chapter":3,"question":"What is computer hardware?","answer":"Any physical component of a computer that you can TOUCH and SEE. It has a definite shape. Examples: monitor, keyboard, mouse, motherboard, power supply, DVD drive, cooling fan, hard disk, CPU, RAM."},{"id":"c3-03","chapter":3,"question":"List the main factors that cause physical damage to hardware.","answer":"Sudden flow of high voltage current • Sudden power failure • Overheating inside the system unit • Dust gathering on hardware and insects • Theft"},{"id":"c3-04","chapter":3,"question":"How does a UPS protect the computer?","answer":"UPS = Uninterrupted Power Supply. During a sudden power failure it continues to supply power for a while, giving sufficient time to save the current work and shut down the computer properly."},{"id":"c3-05","chapter":3,"question":"What does a fuse do? What is used in place of fuses today?","answer":"A fuse prevents damage caused to the computer by a sudden flow of high voltage current. It is widely used in power supply units. Today Mini Circuit Breakers (MCB) are used instead of fuses because they are easier to use."},{"id":"c3-06","chapter":3,"question":"What does surge protection do?","answer":"Protects the computer from high voltage current and LIGHTNING. It controls the flow of high voltage current to the devices and sends it to earth."},{"id":"c3-07","chapter":3,"question":"How can overheating inside the computer be minimized?","answer":"Fix cooling fans on devices that get highly heated inside the computer • Install air conditioners in the computer laboratory to control the heat."},{"id":"c3-08","chapter":3,"question":"List steps to protect the computer from physical harm (dust, moisture, insects).","answer":"Keep the lab clean and tidy • Remove shoes when entering the lab (keeps out sand and dust) • No food or drink inside the lab (food attracts insects like ants) • Prevent insects and rats from entering • Keep the lab without moisture (moisture may cause short circuit) • Use air conditioners when possible • Clean all computers at least once every three months."},{"id":"c3-09","chapter":3,"question":"What steps protect computers from theft?","answer":"Protecting the system unit by locking it • Using CCTV cameras • Making doors and windows of the laboratory lockable properly."},{"id":"c3-10","chapter":3,"question":"What is computer software? Give examples.","answer":"The data and information in the computer and the programmes used for various tasks. Examples: Operating System, word processing software, files containing documents, files containing pictures/images."},{"id":"c3-11","chapter":3,"question":"List the instances that may threaten software.","answer":"Threat of malware • Unauthorized access • Sudden power failure • Natural disasters, terrorist attacks etc. • Complications in the operating system • Unexpected deletion of files or overwriting"},{"id":"c3-12","chapter":3,"question":"What is malware (malicious software)?","answer":"Any man-made software (or part of a software) that functions against the requirements of the computer user, designed to intentionally damage: software installed, data/information stored, computer networks, and perhaps hardware too. Some malware are HYBRID — they behave like a virus at one time and a Trojan horse at another."},{"id":"c3-13","chapter":3,"question":"Name the four types of malware.","answer":"1) Computer virus  •  2) Computer worm  •  3) Trojan horse  •  4) Spyware"},{"id":"c3-14","chapter":3,"question":"What is a computer virus?","answer":"A main malicious software that gains entry to computer software and files, is capable of REPLICATING itself, and spreads from computer to computer through PORTABLE DEVICES. It can delete or modify data/information and corrupt software."},{"id":"c3-15","chapter":3,"question":"How is a computer worm different from a virus?","answer":"A worm causes similar damage, but it spreads across computer networks or the internet WITHOUT the support of a host program or any human interaction."},{"id":"c3-16","chapter":3,"question":"What is a Trojan horse?","answer":"It SEEMS a useful software at first sight, but causes damage to the user SECRETLY once he begins to use it."},{"id":"c3-17","chapter":3,"question":"What is spyware?","answer":"A malicious software that SECRETLY collects data about a person's computer usage, internet usage etc., and sends them to the relevant party without his knowledge."},{"id":"c3-18","chapter":3,"question":"List damages caused by malicious software.","answer":"Deletion, hiding or modification of data/information • Creation of new files and folders that do not belong to the user • Deletion, malfunction or alteration of software behaviour • Decrease of computer efficiency • Unusual network behaviour (sudden disconnections, inability to work) • Unusual reduction of storage capacity • Computer shuts down or restarts again and again"},{"id":"c3-19","chapter":3,"question":"List solutions to avoid or minimize harm from malware.","answer":"Install antivirus software and update it regularly • Scan external storage devices before opening • Activate the firewall with right settings • Access only secure websites • Don't open blacklisted websites • Don't click on pop-ups • Don't open suspicious emails or attachments • Normally use a Limited User Account • Update all software including the OS • Use only original licensed software (pirated software may spread malware)"},{"id":"c3-20","chapter":3,"question":"What is keeping backups? What can be used as backup media?","answer":"The process of keeping copies of software components, used when the original copy is misplaced or damaged. Media: CDs, DVDs, external hard disks, or a different location in the same computer (another folder or another drive)."},{"id":"c3-21","chapter":3,"question":"What are the software solutions (logical security) for access control?","answer":"Using a strong, difficult-to-guess password • Creation of suitable user accounts • Encryption — encrypted data cannot be read and understood even if it falls into wrong hands; adopted especially for sensitive data."},{"id":"c3-22","chapter":3,"question":"What physical methods are used for access control?","answer":"1) Keeping the computer (with sensitive data) at a secure place  •  2) Using CCTV cameras and alarms (monitor movements, automatic urgent messages)  •  3) Using biometric passwords — recognizing identity through FINGER PRINTS, VOICE, FACE or IRIS."},{"id":"c4-01","chapter":4,"question":"What is word processing?","answer":"Composing, editing (manipulating) and/or storing a text-based document in any style."},{"id":"c4-02","chapter":4,"question":"What is word processing software?","answer":"A computer programme capable of creating a document, editing its content, modifying (formatting) its colour or style, and sometimes printing it in different styles."},{"id":"c4-03","chapter":4,"question":"Give examples of word processing software.","answer":"Microsoft Office Word • OpenOffice Writer • LibreOffice Writer • iWork Pages • Corel WordPerfect"},{"id":"c4-04","chapter":4,"question":"Describe the history/evolution of word processing.","answer":"Writing on leaves, stone chips, skin → invention of paper and manual copy writing → wood blocks & clay blocks for printing → printing machine → manual typewriter → electric/electronic typewriter → computer for word processing."},{"id":"c4-05","chapter":4,"question":"What are the two special landmarks in computer word processing?","answer":"Invention of the first computer for word processing — decade 1960 • Creation of the first word processing programme — 1979."},{"id":"c4-06","chapter":4,"question":"List the benefits of using a word processing software.","answer":"Creating documents • Saving/storing for future retrieval • Printing a document and printing several copies • Searching text in the document • Displaying spelling & grammar errors with a chance to correct • Word count • Formatting (editing) of documents"},{"id":"c4-07","chapter":4,"question":"Name the five groups of keys on a typical keyboard.","answer":"1) Control keys  •  2) Character keys  •  3) Function keys  •  4) Navigation keys  •  5) Numeric keypad"},{"id":"c4-08","chapter":4,"question":"What are control keys? Which are most frequently used?","answer":"Keys used alone or in combination with other keys to perform certain actions. Most frequently used: Ctrl, Alt and Esc."},{"id":"c4-09","chapter":4,"question":"What are character keys?","answer":"Keys used to type letters, numbers, punctuation marks and symbols when preparing a document."},{"id":"c4-10","chapter":4,"question":"What are function keys?","answer":"Keys used to perform a specific task (F1–F12). Their functionality may differ from programme to programme."},{"id":"c4-11","chapter":4,"question":"What are navigation keys?","answer":"Keys used for moving around on a webpage and for editing text: arrow keys, Home, End, Page Up, Page Down, Delete and Insert."},{"id":"c4-12","chapter":4,"question":"What is the numeric keypad used for?","answer":"Entering numbers quickly."},{"id":"c4-13","chapter":4,"question":"Why is a typical keyboard called a QWERTY keyboard?","answer":"Considering the design/arrangement of the alphabets — the top letter row starts with the letters Q, W, E, R, T, Y."},{"id":"c4-14","chapter":4,"question":"How does the Caps Lock key work?","answer":"Press once → capital letters are typed. Press again → normal (small) letters are typed."},{"id":"c4-15","chapter":4,"question":"What does the Shift key do?","answer":"There are two shift keys (right and left). While holding Shift: letter keys type ENGLISH CAPITAL letters; other keys type the symbol on the TOP of the key."},{"id":"c4-16","chapter":4,"question":"What do the Space bar, Tab key and Enter key do?","answer":"Space bar — creates an empty space between two words.  •  Tab — creates a somewhat BIG space between two words.  •  Enter — moves the cursor down to the next line."},{"id":"c4-17","chapter":4,"question":"What do the arrow keys and Backspace key do?","answer":"Arrow keys — move the cursor up, down, left or right on the screen.  •  Backspace — deletes any character, space, number or object to the LEFT of the cursor (cursor's current position)."},{"id":"c4-18","chapter":4,"question":"List the rules for correct posture and hand position when typing.","answer":"Sit with the body right in front of the SPACE BAR • Keep both hands raised above the keys — hands should NOT touch the keyboard or table • Press keys softly (pressing hard wears out keys and hurts fingers) • Give rest to both hands when not typing • Improper sitting causes pain in hands, neck, back and joints."},{"id":"c4-19","chapter":4,"question":"Where should the fingers be placed when starting to type?","answer":"Left hand fingers on keys A, S, D, F and right hand fingers on keys J, K, L — always start typing with both hands on the correct row, using the appropriate finger for each key."},{"id":"c4-20","chapter":4,"question":"What is touch typing?","answer":"The act of typing quickly and accurately WITHOUT looking at the keys."},{"id":"c4-21","chapter":4,"question":"List the benefits of learning touch typing.","answer":"Speed — type very quickly • Accuracy — fewer errors • Edit documents easily • Time saving • Decreased mental and physical fatigue • Job prospects — typing speed required for some positions • Health — prevents prolonged bone diseases"},{"id":"c4-22","chapter":4,"question":"Name three typing tutor software that can be downloaded freely.","answer":"Rapid Typing Tutor (rapidtyping.com) • TIPP10 (tipp10.com) • Typefaster (typefastertypingtutor.com)"},{"id":"c4-23","chapter":4,"question":"Name the two types of Sinhala keyboards and describe them.","answer":"1) Standard Sinhala Keyboard (Wijesekara) — you must remember the location of keys; used in present computers and the Unicode system.  •  2) Phonetics Keyboard — easier, based on Sinhala SOUNDS; no need to know letter locations; used to type SMS on mobile phones."},{"id":"c4-24","chapter":4,"question":"Which keyboard is mostly used for typing Tamil? What is special about the Unicode font?","answer":"The Unicode keyboard. Unicode font is OPEN SOURCE — freely downloadable. To read a letter typed with a NON-Unicode font, that font must be installed on the reader's computer. Other fonts: Sinhala — FMBindumathi, FMAbhaya; Tamil — Bamini, Kalaham."},{"id":"c5-01","chapter":5,"question":"What is decomposing a problem?","answer":"Breaking a complex problem that seems difficult to solve at once into several smaller SUB-PROBLEMS, which can then be solved easily one by one. A problem should be understood thoroughly before solving it."},{"id":"c5-02","chapter":5,"question":"What are the advantages of decomposing problems?","answer":"Easy to solve • Easy to understand • Easy to describe • Easy to analyze"},{"id":"c5-03","chapter":5,"question":"Give an example of decomposing a mathematical sum.","answer":"5 × 6 + 4 ÷ 2 is decomposed into three sub-problems: Multiplication (5 × 6 = 30) → Addition (30 + 4 = 34) → Division (34 ÷ 2 = 17). The final solution is found by logically integrating the answers of each sub-problem."},{"id":"c5-04","chapter":5,"question":"Name the three types of control structures used in algorithms.","answer":"1) Sequence  •  2) Selection  •  3) Repetition"},{"id":"c5-05","chapter":5,"question":"What is a sequence control structure?","answer":"Execution of instructions in an algorithm SEQUENTIALLY from top to bottom. Example: the steps of covering a textbook (cut paper → place book → fold → paste → label)."},{"id":"c5-06","chapter":5,"question":"What is a selection control structure?","answer":"Making a decision on which step to follow depending on a condition. The condition is checked FIRST and the flow direction is chosen based on whether it is true or false. Example: a ceiling fan works only if power is available."},{"id":"c5-07","chapter":5,"question":"What is a repetition control structure?","answer":"Execution of an instruction or several instructions REPEATEDLY until a condition is satisfied. Example: putting money into a till again and again until the condition 'till is full' is satisfied."},{"id":"c5-08","chapter":5,"question":"In which two ways can the condition for repetition be checked?","answer":"1) Check the condition BEFORE the repetition starts (e.g. check ink is available before writing)  •  2) Check the condition AFTER functioning once (e.g. write, then check whether ink is finished every time)."},{"id":"c5-09","chapter":5,"question":"What is Scratch?","answer":"A VISUAL programme development software — interactive, attractive and simple, with command blocks. It is a Free and Open Source Software (FOSS) downloadable from http://www.scratch.mit.edu (Scratch 2.0)."},{"id":"c5-10","chapter":5,"question":"Name the parts of the Scratch 2.0 interface.","answer":"Menu bar • Stage • Cursor tools (duplicate block, delete block, grow sprite, shrink sprite) • Sprite list • Block palette • Script area"},{"id":"c5-11","chapter":5,"question":"What is the Stage in Scratch? What is a backdrop?","answer":"The Stage is where sprites move around and diagrams are drawn. It has an X, Y coordinate plane (from -240 to 240 and -180 to 180). The view BEHIND the stage is called the backdrop."},{"id":"c5-12","chapter":5,"question":"What is the Block palette in Scratch?","answer":"The area where blocks are classified into colour-coded tabs: Motion, Looks, Sound, Pen, Data, Events, Control, Sensing, Operators, More Blocks. The relevant block is displayed under the relevant tab."},{"id":"c5-13","chapter":5,"question":"What is the Script area in Scratch?","answer":"The area where you APPLY blocks (by dragging them) and create/develop programmes."},{"id":"c5-14","chapter":5,"question":"Match the Scratch block categories to their functions.","answer":"Motion — move the sprite • Looks — communication among sprites (say/think) • Sound — musical instruments & notes • Pen — colours/tools to draw lines and shapes • Data — make a variable and assign values • Events — instructions for running other blocks (green flag) • Control — selection and repetition • Sensing — receive input • Operators — mathematical operations"},{"id":"c5-15","chapter":5,"question":"List the steps to create a programme using Scratch.","answer":"1) Run Scratch software (double-click icon) 2) Select types of command blocks under the Script tab 3) Drag the command blocks and drop them on the Script area 4) Develop the programme 5) Save as a file 6) Run the programme"},{"id":"c5-16","chapter":5,"question":"How do you manage (copy/delete) command blocks in Scratch?","answer":"Right-click on the block → options: duplicate (copy), delete, add comment, help."},{"id":"c5-17","chapter":5,"question":"What is a variable in programming?","answer":"A variable is used to STORE A VALUE in memory TEMPORARILY. Like a vessel stores liquid, a variable stores a value. To swap liquids of two vessels you need an extra vessel — likewise to swap two variables you need a third variable."},{"id":"c5-18","chapter":5,"question":"How are values assigned to variables?","answer":"Variable name is written on the LEFT of the equal sign and the value on the RIGHT. E.g. name = Amara, age = 12. In Scratch: Data block → Make a Variable → type name → OK; then 'set marks to 67' or 'change marks by 10'."},{"id":"c5-19","chapter":5,"question":"How do you swap the values of two variables (maths and science)?","answer":"Use a third variable (marks):  1) marks = maths  2) maths = science  3) science = marks"},{"id":"c5-20","chapter":5,"question":"What is a bug? What is debugging?","answer":"Bug = an ERROR in a programme. Debug = the ELIMINATION of such bugs. Programs with bugs may not run properly and give incorrect output."},{"id":"c5-21","chapter":5,"question":"In which situations do bugs occur? How are they eliminated?","answer":"Bugs occur when: the ORDER of instructions (blocks) is changed, an instruction is OMITTED, or correct variables and their values are not mentioned. Eliminate bugs by correcting the instructions or arranging the blocks sequentially in the right order."},{"id":"c6-01","chapter":6,"question":"What is a presentation?","answer":"A method used to communicate information and ideas to a certain person or a group. It is livelier than other methods because quick interaction takes place between the speaker and the spectators."},{"id":"c6-02","chapter":6,"question":"What is an electronic presentation?","answer":"A tool used to make a presentation attractive and fruitful. It is like a book, but not totally similar."},{"id":"c6-03","chapter":6,"question":"How is an electronic presentation different from a book?","answer":"A book has PAGES and printed content is difficult to change. A presentation has SLIDES, can include videos, songs and links (liveliness), and its content can be changed again and again even after presenting several times."},{"id":"c6-04","chapter":6,"question":"Give examples of presentation software.","answer":"Microsoft PowerPoint • Apple Keynote • OpenOffice Impress • Corel Presentations"},{"id":"c6-05","chapter":6,"question":"What are the advantages of teaching using a presentation (vs. blackboard)?","answer":"No need to use so many words • Less effort to explain facts • Less chance to change the concentration • Less effort to acquire information."},{"id":"c6-06","chapter":6,"question":"How can a new presentation be designed?","answer":"Open the presentation software → use a BLANK presentation (with blank slides), OR select from pre-designed slide TEMPLATES with various shapes, colours and designs."},{"id":"c6-07","chapter":6,"question":"Name the basic features of a presentation window.","answer":"Title bar • Tool bar • Slides • Slide pane • Note pane"},{"id":"c6-08","chapter":6,"question":"How do you close a presentation? What if it is not saved?","answer":"Click the X mark on the right-hand side. If the presentation was not saved, a dialogue box opens asking 'Save changes before quitting?' — select Yes to save, No to close without saving (or Cancel)."},{"id":"c6-09","chapter":6,"question":"Why should you save a presentation with your own name?","answer":"It is better to use a name of your own rather than the common name given by the software — it helps you find it easily among the other files."},{"id":"c6-10","chapter":6,"question":"What are the ways to open a saved presentation?","answer":"Select the name of the presentation using the presentation software, OR click twice (double-click) on the presentation file."},{"id":"c6-11","chapter":6,"question":"Name the types of slides that can be used in a presentation.","answer":"Title slide • Title and content slide • Sub-title slide • Comparison (double content) slide • Empty slide • Picture slide. Other slides can be built from a blank slide according to the need."},{"id":"c6-12","chapter":6,"question":"How is text inserted into a slide? Which formatting tools are available?","answer":"Text goes into the space shown as DOTTED-LINE boxes on the slide. Tools: change the font colour, size of the font, Bold, Italic, Underline."},{"id":"c6-13","chapter":6,"question":"What are the two ways to insert pictures into a slide?","answer":"1) Copy a saved picture and paste it on the slide  •  2) Use CLIP ART provided by the presentation software. Clip Art is a type of pre-designed images."},{"id":"c6-14","chapter":6,"question":"What shapes can be inserted into presentation slides?","answer":"Circles, squares, triangles, lines, arrows, flow chart shapes and stars."},{"id":"c6-15","chapter":6,"question":"What multimedia can be inserted into a slide?","answer":"VIDEO and AUDIO — it makes the presentation more interesting than pictures alone. Some software allows recording audio while designing; some provide libraries of pre-recorded sounds."},{"id":"c6-16","chapter":6,"question":"How are tables inserted into slides?","answer":"Table designing tools are provided; tables drawn in MS Word or MS Excel can also be inserted. Give the number of columns and rows needed. Changes can be done even after designing."},{"id":"c6-17","chapter":6,"question":"What is the purpose of slide designs?","answer":"To design the background of slides colourful and attractive. Background and letter colours should match; the font/content should be highlighted against the background. Using designs means no extra time is wasted matching font colour and background."},{"id":"c6-18","chapter":6,"question":"What is slide transition? What should you be careful about?","answer":"The effect used to MOVE from slide to slide, to make it attractive. Speed can be controlled, transition type selected, and sounds added. If it takes more time it would be tiresome for the audience."},{"id":"c6-19","chapter":6,"question":"How can slides be deleted, copied, moved and hidden?","answer":"Select the slide first (the slide SORTER view presents slides in an organized way, making selection easy).  •  Delete: Delete key or Backspace key (multiple slides can be deleted at once)  •  Copy: copy & paste  •  Move: drag & drop, or cut & paste  •  Hide: Hide Slide command (hidden slides don't appear but can be shown again when needed)."},{"id":"c6-20","chapter":6,"question":"Why is moving slides useful?","answer":"It is not necessary to prepare slides in the same order you want to present — the presentation software allows the order to be changed after designing."},{"id":"c7-01","chapter":7,"question":"What is a computer network?","answer":"A network that consists of two or more interconnected computers."},{"id":"c7-02","chapter":7,"question":"What is the Internet?","answer":"An EXTRA-LARGE network formed by a large number of interconnected computer networks, with millions of computers on it. Services include: getting information, watching videos, listening to music, sending e-mails, buying goods and services, computer games, map observation and video conferencing."},{"id":"c7-03","chapter":7,"question":"What is the World Wide Web (WWW)?","answer":"The MAIN service provided by the internet. It is formed with many WEBSITES, and a website is formed with many WEB PAGES. There are millions of websites in the World Wide Web."},{"id":"c7-04","chapter":7,"question":"What is a URL (Uniform Resource Locator)?","answer":"The ADDRESS used to identify one resource among the huge number of resources in the World Wide Web. Example: https://www.moe.gov.lk — the website of the Ministry of Education of Sri Lanka."},{"id":"c7-05","chapter":7,"question":"How can you identify a SECURED website? (two methods)","answer":"1) The address of the website starts with HTTPS (e.g. https://moe.gov.lk)  •  2) After logging in, a LOCK symbol is displayed on the address bar."},{"id":"c7-06","chapter":7,"question":"What is video conferencing?","answer":"Conducting discussions using VIDEO technology on the internet between two persons or two groups who are geographically located at a distance from each other."},{"id":"c7-07","chapter":7,"question":"What are the advantages of video conferencing?","answer":"The initial cost of conducting conferences can be minimized • No need to travel — no transport cost or waste of time • It can be quickly arranged."},{"id":"c7-08","chapter":7,"question":"What hardware and software are required for a video conference?","answer":"A computer • A web camera • An internet connection • Software to conduct the video conference. Examples of software: Zoom, Skype, GoToMeeting, Webex."},{"id":"c7-09","chapter":7,"question":"What is e-mail?","answer":"ELECTRONIC LETTERS exchanged electronically between two people or among several people who have e-mail addresses. Letters, photos, videos and documents can be sent as messages through e-mail."},{"id":"c7-10","chapter":7,"question":"How do you create an e-mail account? Give examples of e-mail service providers.","answer":"First select a suitable service-providing website; in most cases they provide FREE e-mail accounts. Examples: Gmail, Yahoo Mail, Outlook Mail."},{"id":"c7-11","chapter":7,"question":"List the characteristics of e-mail.","answer":"Send copies of one message to several people at once • If a letter could not be sent properly, it is notified with a reply message • Save e-mail addresses and retrieve them with the address book • Time and date of sending are automatically entered • Ability to forward a message to another person • Ability to attach files (photos, documents) easily"},{"id":"c7-12","chapter":7,"question":"Explain the parts of the e-mail address saman@edupub.gov.lk.","answer":"saman = USER NAME • @ = symbol connecting the username to the rest • edupub.gov.lk = DOMAIN NAME • .lk means it is an e-mail address in SRI LANKA."},{"id":"c7-13","chapter":7,"question":"What are the To, Cc and Bcc fields?","answer":"To — the e-mail address of the RECEIVER • Cc (Carbon Copy) — addresses of people who get copies; visible to everyone • Bcc (Blind Carbon Copy) — these addresses are NOT visible to people in To and Cc (but all To/Cc addresses are visible to Bcc people)."},{"id":"c7-14","chapter":7,"question":"What is the Subject field and the Attach tool in an e-mail?","answer":"Subject — the TOPIC related to the e-mail (e.g. 'Grade 7 student details'). Attach — tool to attach files that should go with the e-mail, e.g. photos, videos, sound tracks."},{"id":"c7-15","chapter":7,"question":"Explain the Inbox, Sent, Junk, Trash and Contacts folders.","answer":"Inbox — messages sent by other people (unopened ones shown in dark colour) • Sent — e-mails sent by you • Junk/Spam — unnecessary or spam e-mails • Trash — deleted e-mails stored temporarily • Contacts — e-mail addresses and contact information."},{"id":"c7-16","chapter":7,"question":"What is HTML?","answer":"Hyper Text Markup Language — the language used to CREATE WEB PAGES. It has its own codes, and a web page is created using these codes."},{"id":"c7-17","chapter":7,"question":"What is the purpose of these HTML codes: <html>, <head>, <title>, <body>?","answer":"<html> — beginning of a web page • <head> — the first part of the web page • <title> — the topic of the web page (appears on the title bar) • <body> — the part whose items APPEAR on the web page."},{"id":"c7-18","chapter":7,"question":"What do <br>, <h1>, <h6>, <center> and <p> do in HTML?","answer":"<br> — go to the next line (break line) • <h1> — LARGEST font for a heading • <h6> — SMALLEST font for a heading • <center> — center the letters on the page • <p> — start a paragraph."},{"id":"c7-19","chapter":7,"question":"What do <bgcolor>, <background>, <img src> and <A href> do in HTML?","answer":"<bgcolor> — use a background colour in the web page • <background> — use a background image • <img src> — use/display an image (width & height can be set) • <A href> — LINK another file/web page to the web page."},{"id":"c7-20","chapter":7,"question":"What do <font face>, <b>, <i>, <u> do in HTML?","answer":"<font face> — change the font style • <b> — bold the font • <i> — italicize the font • <u> — underline text. (<font color> changes the font colour.)"},{"id":"c7-21","chapter":7,"question":"What are the rules for writing HTML codes?","answer":"All codes are written between '<' and '>' symbols. Most codes have a beginning and an end — the ending code uses the '/' symbol, e.g. <title> ... <\/title>. A simple text editing software like NOTEPAD can be used to enter HTML codes."},{"id":"c7-22","chapter":7,"question":"Which HTML codes create numbered and bulleted lists?","answer":"<ol> — numbered list  •  <ul> — bulleted list  •  <li> — each list item (lists can be nested inside each other)."},{"id":"c7-23","chapter":7,"question":"What is hacking? How can we protect from hacking?","answer":"Hacking = accessing data and information in a computer or computer network WITHOUT permission. Protection: use usernames & passwords for internet accounts, the computer and files/folders/programmes • Encrypt the hard disk • Protect the internet service with a username and password • Keep backups • Update antivirus software."},{"id":"c7-24","chapter":7,"question":"How does a virus affect a computer, and how can we protect from virus attacks?","answer":"A virus DUPLICATES itself inside the computer, reduces efficiency, corrupts data and sometimes deletes them. Protection: install and regularly update antivirus software • use safe websites • avoid blacklisted websites • don't click pop-up windows • don't open suspected emails and attachments. (Viruses mainly enter through the internet, networks, compact disks and USB drives.)"},{"id":"c7-25","chapter":7,"question":"What is software piracy? How can we protect from it?","answer":"Copying or keeping duplicate copies of software, or selling them, WITHOUT LEGAL PERMISSION. Protection: study the licence agreement before installing • buy from a trusted company • download only from the producer's website • get help of a knowledgeable person when purchasing/downloading/installing."},{"id":"c7-26","chapter":7,"question":"What is cyber bullying? In which ways can it be caused?","answer":"Releasing FALSE information which makes a person or an institution uncomfortable, causing harassment and insult. Ways: websites like Facebook, Instagram, Snapchat, Twitter • short messages via SMS • instant message applications/social media • e-mails. Posting insulting photos, comments and videos is categorized under UNLAWFUL CRIMES."},{"id":"c7-27","chapter":7,"question":"Give examples of personal identity data and how it can be misused.","answer":"Identity data: NAME, ADDRESS, TELEPHONE, BIRTHDAY. Misuse: obtaining information about the computer and user without permission and using it for FRAUDS; misusing information entered into websites (e.g. using it for business aims without permission)."},{"id":"c7-28","chapter":7,"question":"What makes a strong password?","answer":"At least EIGHT characters, containing simple letters, CAPITAL letters, numbers and special characters ($, *, #, @). Example: kanDY#4599"},{"id":"c7-29","chapter":7,"question":"List the precautions for online security.","answer":"Update antivirus software • Install the latest web browsers and update them regularly • Turn on automatic updates for malware protection and the OS • Use a strong password • Protect the Wi-Fi router with a password • Be careful about phishing attacks."},{"id":"c7-30","chapter":7,"question":"What are phishing attacks? How do we avoid them?","answer":"Obtaining information on BANK ACCOUNT details and E-MAIL ACCOUNT details by appearing to be trustworthy and cheating users. Avoid by: never clicking suspected e-mail messages, pop-up messages and hyperlinks."},{"id":"c7-31","chapter":7,"question":"What is a web browser?","answer":"An application software used to make a website visible on the computer screen."},{"id":"c7-32","chapter":7,"question":"Into which folders can e-mails be divided?","answer":"Inbox, Sent, Draft, Trash and Spam."}];</script>
+<script>
+(function () {
+  "use strict";
+
+  var CARDS = window.CARDS;
+
+  var CHAPTERS = [
+    { id: 1, title: "Central Processing Unit", short: "CPU", color: "#f43f5e", soft: "#ffe4e6", icon: "cpu" },
+    { id: 2, title: "Operating System", short: "Operating System", color: "#f59e0b", soft: "#fef3c7", icon: "app" },
+    { id: 3, title: "Security of Computer System", short: "Security", color: "#10b981", soft: "#d1fae5", icon: "shield" },
+    { id: 4, title: "Word Processing", short: "Word Processing", color: "#8b5cf6", soft: "#ede9fe", icon: "keyboard" },
+    { id: 5, title: "Programme Development", short: "Programming", color: "#f97316", soft: "#ffedd5", icon: "layers" },
+    { id: 6, title: "Presentation Software", short: "Presentations", color: "#d946ef", soft: "#fae8ff", icon: "presentation" },
+    { id: 7, title: "Using Internet for Information & Communication", short: "Internet", color: "#14b8a6", soft: "#ccfbf1", icon: "globe" }
+  ];
+
+  var ICONS = {
+    cpu: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="10" y="10" width="4" height="4"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>',
+    app: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 9h20"/><path d="M6 6.5h.01"/></svg>',
+    shield: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>',
+    keyboard: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg>',
+    layers: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 10 5-10 5L2 7l10-5z"/><path d="m2 12 10 5 10-5"/><path d="m2 17 10 5 10-5"/></svg>',
+    presentation: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>',
+    globe: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>'
+  };
+
+  function qs(sel) { return document.querySelector(sel); }
+
+  // ---------------- store ----------------
+  var STORE_KEY = "ict-g7-flashcards-v1";
+  var store = loadStore();
+
+  function loadStore() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) {
+        var p = JSON.parse(raw);
+        return { mastered: p.mastered || {}, learning: p.learning || {}, quizBest: p.quizBest || {} };
+      }
+    } catch (e) {}
+    return { mastered: {}, learning: {}, quizBest: {} };
+  }
+  function saveStore() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) {}
+  }
+  function statusOf(id) {
+    if (store.mastered[id]) return "mastered";
+    if (store.learning[id]) return "learning";
+    return "unseen";
+  }
+  function setStatus(id, st) {
+    delete store.mastered[id];
+    delete store.learning[id];
+    if (st === "mastered") store.mastered[id] = true;
+    else if (st === "learning") store.learning[id] = true;
+    saveStore();
+  }
+  function countsFor(cards) {
+    var m = 0, l = 0;
+    for (var i = 0; i < cards.length; i++) {
+      if (store.mastered[cards[i].id]) m++;
+      else if (store.learning[cards[i].id]) l++;
+    }
+    return { mastered: m, learning: l, unseen: cards.length - m - l };
+  }
+
+  // ---------------- helpers ----------------
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function byChapter(ch) {
+    return CARDS.filter(function (c) { return ch === "all" || c.chapter === ch; });
+  }
+  function scopeLabel(scope) {
+    if (scope === "all") return "All chapters";
+    return "Chapter " + scope + " · " + CHAPTERS[scope - 1].short;
+  }
+
+  // ---------------- view switching ----------------
+  var VIEWS = ["home", "study", "quiz", "browse"];
+  var currentView = "home";
+  function show(view) {
+    VIEWS.forEach(function (v) {
+      qs("#view-" + v).classList.toggle("hidden", v !== view);
+    });
+    currentView = view;
+    window.scrollTo(0, 0);
+    if (view === "home") {
+      renderHome();
+      qs("#topbar-sub").textContent = "Exam prep · " + CARDS.length + " cards · 7 chapters";
+    }
+  }
+
+  // ================= HOME =================
+  function renderHome() {
+    var totals = countsFor(CARDS);
+    var pct = Math.round((totals.mastered / CARDS.length) * 100);
+
+    qs("#hero-total").textContent = CARDS.length;
+    qs("#stat-mastered").textContent = totals.mastered;
+    qs("#stat-learning").textContent = totals.learning;
+    qs("#stat-unseen").textContent = totals.unseen;
+    qs("#stat-total").textContent = CARDS.length;
+    qs("#pc-bar").style.width = pct + "%";
+
+    var best = store.quizBest["all"];
+    qs("#pc-best").innerHTML = best != null
+      ? 'Best mixed quiz: <b>' + best + "/10</b>"
+      : "Best mixed quiz: —";
+
+    var grid = qs("#chapter-grid");
+    grid.innerHTML = "";
+    CHAPTERS.forEach(function (ch) {
+      var cards = byChapter(ch.id);
+      var c = countsFor(cards);
+      var p = Math.round((c.mastered / cards.length) * 100);
+      var el = document.createElement("div");
+      el.className = "chapter-card";
+      el.style.setProperty("--ac", ch.color);
+      el.style.setProperty("--ac-soft", ch.soft);
+      el.innerHTML =
+        '<div class="ch-head">' +
+          '<div class="ch-icon">' + ICONS[ch.icon] + "</div>" +
+          '<div style="min-width:0">' +
+            '<span class="ch-num">Chapter ' + ch.id + "</span>" +
+            '<div class="ch-title">' + esc(ch.title) + "</div>" +
+            '<span class="ch-count">' + cards.length + " cards · " + c.mastered + " mastered</span>" +
+          "</div>" +
+        "</div>" +
+        '<div class="ch-bar"><div class="ch-bar-fill" style="width:' + p + '%"></div></div>' +
+        '<div class="ch-actions">' +
+          '<button class="btn btn-ch" data-study="' + ch.id + '">' +
+            '<svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2a5.5 5.5 0 0 0-5.4 6.6A5 5 0 0 0 6 18h1.5"/><path d="M14.5 2a5.5 5.5 0 0 1 5.4 6.6A5 5 0 0 1 18 18h-1.5"/><path d="M8.5 14.5 12 11l3.5 3.5"/><path d="M12 11v11"/></svg>' +
+            "Study</button>" +
+          '<button class="btn btn-outline" data-quiz="' + ch.id + '">' +
+            '<svg class="ic ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>' +
+            "Quiz</button>" +
+        "</div>";
+      grid.appendChild(el);
+    });
+  }
+
+  qs("#chapter-grid").addEventListener("click", function (e) {
+    var b = e.target.closest("button");
+    if (!b) return;
+    if (b.hasAttribute("data-study")) startStudy(b.getAttribute("data-study") === "all" ? "all" : Number(b.getAttribute("data-study")));
+    else if (b.hasAttribute("data-quiz")) startQuiz(b.getAttribute("data-quiz") === "all" ? "all" : Number(b.getAttribute("data-quiz")));
+  });
+  qs("#btn-study-all").addEventListener("click", function () { startStudy("all"); });
+  qs("#btn-quiz-all").addEventListener("click", function () { startQuiz("all"); });
+  qs("#btn-browse-all").addEventListener("click", function () { openBrowse(); });
+
+  // ================= STUDY =================
+  var study = { cards: [], queue: [], pos: 0, flipped: false, shuffled: false, sessionM: 0, sessionR: 0, scope: "all", done: false };
+
+  function startStudy(scope, shuffled) {
+    var cards = byChapter(scope);
+    study = {
+      cards: cards, queue: cards.map(function (c) { return c.id; }),
+      pos: 0, flipped: false, shuffled: !!shuffled, sessionM: 0, sessionR: 0,
+      scope: scope, done: false
+    };
+    if (study.shuffled) study.queue = shuffle(study.queue);
+    qs("#btn-shuffle").classList.toggle("active", study.shuffled);
+    qs("#study-label").textContent = scopeLabel(scope);
+    qs("#study-card-area").classList.remove("hidden");
+    qs("#study-done").classList.add("hidden");
+    show("study");
+    qs("#topbar-sub").textContent = "Studying — " + scopeLabel(scope);
+    renderStudyCard();
+  }
+
+  function curCard() {
+    var id = study.queue[study.pos];
+    for (var i = 0; i < study.cards.length; i++) if (study.cards[i].id === id) return study.cards[i];
+    return null;
+  }
+
+  function renderStudyCard() {
+    var c = curCard();
+    if (!c) { completeStudy(); return; }
+    var ch = CHAPTERS[c.chapter - 1];
+    qs("#study-progress-text").textContent = (study.pos + 1) + " / " + study.queue.length;
+    qs("#study-bar").style.width = (study.pos / study.queue.length * 100) + "%";
+    var flip = qs("#flip-card");
+    flip.style.setProperty("--ac", ch.color);
+    flip.style.setProperty("--ac-soft", ch.soft);
+    flip.classList.remove("flipped");
+    study.flipped = false;
+    qs("#card-q-text").textContent = c.question;
+    qs("#card-a-text").textContent = c.answer;
+    qs("#card-ch-badge-f").textContent = "Ch " + c.chapter + " · " + ch.short;
+    qs("#card-ch-badge-b").textContent = "Ch " + c.chapter + " · " + ch.short;
+  }
+
+  function flipCard() {
+    study.flipped = !study.flipped;
+    qs("#flip-card").classList.toggle("flipped", study.flipped);
+  }
+  function goPos(p) {
+    study.pos = Math.max(0, Math.min(p, study.queue.length - 1));
+    renderStudyCard();
+  }
+  function grade(mastered) {
+    var c = curCard();
+    if (!c || study.done) return;
+    setStatus(c.id, mastered ? "mastered" : "learning");
+    if (mastered) study.sessionM++; else study.sessionR++;
+    if (!mastered) study.queue.push(c.id);
+    if (mastered && study.pos >= study.queue.length - 1) { completeStudy(); return; }
+    goPos(study.pos + 1);
+  }
+  function completeStudy() {
+    study.done = true;
+    qs("#study-card-area").classList.add("hidden");
+    var done = qs("#study-done");
+    done.classList.remove("hidden");
+    var cards = study.cards;
+    var c = countsFor(cards);
+    var pct = Math.round((c.mastered / cards.length) * 100);
+    qs("#done-mastered").textContent = study.sessionM;
+    qs("#done-learning").textContent = study.sessionR;
+    qs("#done-pct").textContent = pct + "%";
+    qs("#done-sub").textContent = "You went through " + study.queue.length + " cards in " + scopeLabel(study.scope).toLowerCase() + ".";
+    qs("#study-bar").style.width = "100%";
+    qs("#study-progress-text").textContent = "Done";
+  }
+
+  qs("#flip-card").addEventListener("click", flipCard);
+  qs("#btn-mastered").addEventListener("click", function () { grade(true); });
+  qs("#btn-learning").addEventListener("click", function () { grade(false); });
+  qs("#btn-prev").addEventListener("click", function () { goPos(study.pos - 1); });
+  qs("#btn-next").addEventListener("click", function () { goPos(study.pos + 1); });
+  qs("#btn-study-back").addEventListener("click", function () { show("home"); });
+  qs("#btn-study-home").addEventListener("click", function () { show("home"); });
+  qs("#btn-study-again").addEventListener("click", function () { startStudy(study.scope, true); });
+  qs("#btn-shuffle").addEventListener("click", function () {
+    startStudy(study.scope, !study.shuffled);
+  });
+
+  // ================= QUIZ =================
+  var quiz = { items: [], idx: 0, score: 0, scope: "all", answered: false, missed: [] };
+
+  function quizPool(scope) {
+    var pool = byChapter(scope).filter(function (c) { return c.answer.length > 0 && c.answer.length <= 90; });
+    return pool;
+  }
+  function startQuiz(scope) {
+    var pool = quizPool(scope);
+    if (pool.length < 4) pool = quizPool("all");
+    var picks = shuffle(pool).slice(0, Math.min(10, pool.length));
+    quiz = {
+      items: picks.map(function (c) { return makeQuestion(c, pool); }),
+      idx: 0, score: 0, scope: scope, answered: false, missed: []
+    };
+    qs("#quiz-label").textContent = "Quiz — " + scopeLabel(scope);
+    var best = store.quizBest[String(scope)];
+    qs("#quiz-best-chip").textContent = best != null ? "Best: " + best + "/10" : "Best: —";
+    qs("#quiz-card-area").classList.remove("hidden");
+    qs("#quiz-done").classList.add("hidden");
+    show("quiz");
+    qs("#topbar-sub").textContent = "Quiz — " + scopeLabel(scope);
+    renderQuiz();
+  }
+  function makeQuestion(card, pool) {
+    var distractors = [];
+    var candidates = shuffle(pool.filter(function (c) { return c.id !== card.id && c.answer !== card.answer; }));
+    for (var i = 0; i < candidates.length && distractors.length < 3; i++) {
+      if (distractors.indexOf(candidates[i].answer) === -1) distractors.push(candidates[i].answer);
+    }
+    var options = shuffle([card.answer].concat(distractors));
+    return { card: card, options: options, answer: card.answer };
+  }
+  function renderQuiz() {
+    var q = quiz.items[quiz.idx];
+    var ch = CHAPTERS[q.card.chapter - 1];
+    quiz.answered = false;
+    qs("#quiz-progress-text").textContent = "Question " + (quiz.idx + 1) + " of " + quiz.items.length;
+    qs("#quiz-bar").style.width = (quiz.idx / quiz.items.length * 100) + "%";
+    qs("#quiz-ch").textContent = "Ch " + q.card.chapter + " · " + ch.short;
+    qs("#quiz-q").textContent = q.card.question;
+    qs("#quiz-feedback").textContent = "";
+    qs("#quiz-feedback").className = "quiz-feedback";
+    var box = qs("#quiz-options");
+    box.innerHTML = "";
+    q.options.forEach(function (opt, i) {
+      var b = document.createElement("button");
+      b.className = "quiz-opt";
+      b.innerHTML = '<span class="opt-letter">' + "ABCD"[i] + '</span><span class="opt-text">' + esc(opt) + "</span>";
+      b.addEventListener("click", function () { answerQuiz(i, b); });
+      box.appendChild(b);
+    });
+  }
+  function answerQuiz(i, btn) {
+    if (quiz.answered) return;
+    quiz.answered = true;
+    var q = quiz.items[quiz.idx];
+    var correctIdx = q.options.indexOf(q.answer);
+    var opts = Array.prototype.slice.call(document.querySelectorAll("#quiz-options .quiz-opt"));
+    opts.forEach(function (b, bi) {
+      b.disabled = true;
+      if (bi === correctIdx) b.classList.add("correct");
+    });
+    if (i === correctIdx) {
+      quiz.score++;
+      qs("#quiz-feedback").textContent = "✓ Correct!";
+      qs("#quiz-feedback").className = "quiz-feedback ok";
+    } else {
+      btn.classList.add("wrong");
+      quiz.missed.push(q.card);
+      qs("#quiz-feedback").textContent = "✗ Not quite — the correct answer is highlighted";
+      qs("#quiz-feedback").className = "quiz-feedback bad";
+      setStatus(q.card.id, "learning");
+    }
+    setTimeout(function () {
+      quiz.idx++;
+      if (quiz.idx >= quiz.items.length) finishQuiz();
+      else renderQuiz();
+    }, 1200);
+  }
+  function finishQuiz() {
+    qs("#quiz-card-area").classList.add("hidden");
+    qs("#quiz-done").classList.remove("hidden");
+    qs("#quiz-bar").style.width = "100%";
+    qs("#quiz-progress-text").textContent = "Finished";
+    var n = quiz.items.length;
+    qs("#quiz-score").textContent = quiz.score;
+    qs("#quiz-of").textContent = "out of " + n;
+
+    var key = String(quiz.scope);
+    var prevBest = store.quizBest[key];
+    var isNewBest = prevBest == null || quiz.score > prevBest;
+    if (isNewBest) { store.quizBest[key] = quiz.score; saveStore(); }
+    qs("#quiz-best-line").textContent = isNewBest
+      ? "🎉 New best score for " + scopeLabel(quiz.scope) + "!"
+      : "Best score: " + store.quizBest[key] + "/" + n;
+
+    var msg;
+    var r = quiz.score / n;
+    if (r === 1) msg = "Perfect score! Exam ready! 🏆";
+    else if (r >= 0.8) msg = "Excellent work!";
+    else if (r >= 0.6) msg = "Good — keep going!";
+    else if (r >= 0.4) msg = "Getting there — review and retry.";
+    else msg = "Keep studying, you'll get it!";
+    qs("#quiz-msg").textContent = msg;
+
+    var mbox = qs("#quiz-missed-box");
+    var mlist = qs("#quiz-missed");
+    if (quiz.missed.length === 0) {
+      mbox.classList.add("hidden");
+    } else {
+      mbox.classList.remove("hidden");
+      mlist.innerHTML = "";
+      quiz.missed.forEach(function (c) {
+        var d = document.createElement("div");
+        d.className = "missed-item";
+        d.innerHTML = '<div class="mq">' + esc(c.question) + '</div><div class="ma">' + esc(c.answer) + "</div>";
+        mlist.appendChild(d);
+      });
+    }
+  }
+  qs("#btn-quiz-back").addEventListener("click", function () { show("home"); });
+  qs("#btn-quiz-home").addEventListener("click", function () { show("home"); });
+  qs("#btn-quiz-again").addEventListener("click", function () { startQuiz(quiz.scope); });
+
+  // ================= BROWSE =================
+  var browse = { q: "", ch: "all", status: "all" };
+
+  function openBrowse() {
+    show("browse");
+    qs("#topbar-sub").textContent = "Browse all cards";
+    renderBrowseChips();
+    renderBrowseList();
+  }
+  function renderBrowseChips() {
+    var row = qs("#browse-chips");
+    row.innerHTML = "";
+    var mkChip = function (label, val) {
+      var b = document.createElement("button");
+      b.className = "chip" + (String(browse.ch) === String(val) ? " active" : "");
+      b.textContent = label;
+      b.addEventListener("click", function () {
+        browse.ch = val;
+        renderBrowseChips();
+        renderBrowseList();
+      });
+      row.appendChild(b);
+    };
+    mkChip("All chapters", "all");
+    CHAPTERS.forEach(function (ch) { mkChip("Ch " + ch.id + " · " + ch.short, ch.id); });
+
+    var srow = qs("#browse-status-chips");
+    srow.innerHTML = "";
+    var stOpts = [["all", "All statuses"], ["mastered", "✓ Mastered"], ["learning", "Still learning"], ["unseen", "Not seen"]];
+    stOpts.forEach(function (p) {
+      var b = document.createElement("button");
+      b.className = "chip" + (browse.status === p[0] ? " active" : "");
+      b.textContent = p[1];
+      b.addEventListener("click", function () {
+        browse.status = p[0];
+        renderBrowseChips();
+        renderBrowseList();
+      });
+      srow.appendChild(b);
+    });
+  }
+  function renderBrowseList() {
+    var term = browse.q.trim().toLowerCase();
+    var list = qs("#browse-list");
+    list.innerHTML = "";
+    var shown = 0;
+    var frag = document.createDocumentFragment();
+
+    CARDS.forEach(function (c) {
+      if (browse.ch !== "all" && c.chapter !== Number(browse.ch)) return;
+      if (browse.status !== "all" && statusOf(c.id) !== browse.status) return;
+      if (term && c.question.toLowerCase().indexOf(term) === -1 && c.answer.toLowerCase().indexOf(term) === -1) return;
+      shown++;
+      var ch = CHAPTERS[c.chapter - 1];
+      var st = statusOf(c.id);
+      var el = document.createElement("div");
+      el.className = "b-item";
+      el.innerHTML =
+        '<div class="b-q">' + esc(c.question) + "</div>" +
+        '<div class="b-a">' + esc(c.answer) + "</div>" +
+        '<div class="b-foot">' +
+          '<span class="badge" style="color:' + ch.color + ';background:' + ch.soft + '">Ch ' + c.chapter + " · " + esc(ch.short) + "</span>" +
+          '<button class="st st-' + st + '" data-id="' + c.id + '">' + stLabel(st) + "</button>" +
+          '<span class="hint">tap status to change</span>' +
+        "</div>";
+      frag.appendChild(el);
+    });
+    list.appendChild(frag);
+    qs("#browse-count").textContent = "Showing " + shown + " of " + CARDS.length + " cards";
+  }
+  function stLabel(st) {
+    return st === "mastered" ? "✓ Mastered" : st === "learning" ? "Learning" : "Not seen";
+  }
+  qs("#browse-list").addEventListener("click", function (e) {
+    var pill = e.target.closest(".st");
+    if (!pill) return;
+    var id = pill.getAttribute("data-id");
+    var cur = statusOf(id);
+    var next = cur === "unseen" ? "learning" : cur === "learning" ? "mastered" : "unseen";
+    setStatus(id, next);
+    pill.className = "st st-" + next;
+    pill.textContent = stLabel(next);
+  });
+  qs("#browse-search").addEventListener("input", function (e) {
+    browse.q = e.target.value;
+    renderBrowseList();
+  });
+  qs("#btn-browse-back").addEventListener("click", function () { show("home"); });
+
+  // ================= RESET & NAV =================
+  function resetAll() {
+    if (!confirm("Reset all progress?\n\nMastered cards and quiz scores will be cleared.")) return;
+    store = { mastered: {}, learning: {}, quizBest: {} };
+    saveStore();
+    show("home");
+  }
+  qs("#btn-reset").addEventListener("click", resetAll);
+  qs("#btn-reset2").addEventListener("click", resetAll);
+  qs("#btn-home").addEventListener("click", function () { show("home"); });
+
+  // keyboard shortcuts (study view)
+  document.addEventListener("keydown", function (e) {
+    if (currentView !== "study" || study.done) return;
+    var t = e.target && e.target.tagName;
+    if (t === "INPUT" || t === "TEXTAREA") return;
+    if (e.key === " " || e.key === "Enter") { e.preventDefault(); flipCard(); }
+    else if (e.key === "ArrowRight") { goPos(study.pos + 1); }
+    else if (e.key === "ArrowLeft") { goPos(study.pos - 1); }
+    else if (e.key === "1") { grade(false); }
+    else if (e.key === "2") { grade(true); }
+  });
+
+  // init
+  show("home");
+})();
+</script>
+</body>
+</html>
